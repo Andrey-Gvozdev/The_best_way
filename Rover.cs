@@ -25,15 +25,13 @@ public class Rover {
             PrevPoint = null
         };
 
-        Point currentPoint = startPoint;
-
         neighborList.Add(startPoint);
 
         while (true)
         {
-            currentPoint = TakeActivePoint(currentPoint, neighborList);
+            Point activePoint = TakeActivePoint(goalPoint, neighborList);
             
-            if (CalcHeuristic(currentPoint, goalPoint) == 1)
+            if (CalcHeuristic(activePoint, goalPoint) == 1)
             {
                 //goalPoint[4] = currentPoint[0];
                 //goalPoint[5] = currentPoint[1];
@@ -43,7 +41,7 @@ public class Rover {
                 break;
             }
 
-            closedList.Add(currentPoint);
+            closedList.Add(activePoint);
 
             //AddingNeighborPoints(currentPoint, map, openList, neighborList);
 
@@ -120,17 +118,19 @@ public class Rover {
         }
     }
 
-    public static Point TakeActivePoint(Point currentPoint, Collection<Point> neighborList)
+    public static Point TakeActivePoint(Point goalPoint, Collection<Point> neighborList)
     {
+        Point activePoint = neighborList[0];
+        
         foreach (var point in neighborList)
         {
-            if (CalcHeuristic(point, currentPoint) + point.FuelFromStart < CalcHeuristic(point, currentPoint) + point.FuelFromStart)
+            if (CalcHeuristic(point, goalPoint) + point.FuelFromStart < CalcHeuristic(activePoint, goalPoint) + activePoint.FuelFromStart)
             {
-                
-                currentPoint = point;
+                activePoint = point;
             }
         }
-        return currentPoint;
+
+        return activePoint;
     }
 }
 
