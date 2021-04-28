@@ -10,27 +10,27 @@ public class Rover {
 
         //Point info { {0}active i, {1}active j, {2}active height, {3}fuel from start point, {4}prev i, {5}prev j, {6}prev height }
         int[] startPoint = { 0, 0, map[0, 0], 0, 0, 0, map[0, 0] };
-        int[] goalPoint = { map.GetUpperBound(0), map.GetUpperBound(1), map[map.GetUpperBound(0), map.GetUpperBound(1)], Int32.MaxValue };
-
+        int[] goalPoint = { map.GetUpperBound(0), map.GetUpperBound(1), map[map.GetUpperBound(0), map.GetUpperBound(1)], Int16.MaxValue, map.GetUpperBound(0), map.GetUpperBound(1) };
+        int[] currentPoint = goalPoint;
         openList.Add(startPoint);
 
-
+        
     }
-    public int CalcHeuristic(int[] currentPoint, int[] goalPoint)
+    public static int CalcHeuristic(int[] currentPoint, int[] goalPoint)
     {
         int heuristic = Math.Abs(currentPoint[0] - goalPoint[0]) + Math.Abs(currentPoint[1] - goalPoint[1]);
 
         return heuristic;
     }
 
-    public int CalcFuelConsumptionFromStart(int[] currentPoint)
+    public static int CalcFuelConsumptionFromStart(int[] currentPoint)
     {
         int fuelConsamption = currentPoint[3] + Math.Abs(currentPoint[2] - currentPoint[6]) + 1;
         
         return fuelConsamption; 
     }
 
-    public void AddingNeighborPoints(int[] currentPoint, int[,] map, Collection<int[]> openList)
+    public static void AddingNeighborPoints(int[] currentPoint, int[,] map, Collection<int[]> openList)
     {
         var tempPoints = new Collection<int[]>();
 
@@ -53,5 +53,17 @@ public class Rover {
             else
                 openList.Add(point);
         }
+    }
+
+    public static int[] TakeActivePoint(int[] currentPoint, Collection<int[]> openList)
+    {
+        foreach (var point in openList)
+        {
+            if (CalcHeuristic(point, currentPoint) + CalcFuelConsumptionFromStart(point) < CalcHeuristic(point, currentPoint) + CalcFuelConsumptionFromStart(point))
+            {
+                currentPoint = point;
+            }
+        }
+        return currentPoint;
     }
 }
