@@ -5,65 +5,139 @@ public class Rover {
 
     
     public static void CalculateRoverPath(int[,] map) {
-        var openList = new Collection<int[]>();
-        var closedList = new Collection<int[]>();
+        var openList = new Collection<Point>();
+        var closedList = new Collection<Point>();
+        var neighborList = new Collection<Point>();
 
-        //Point info { {0}active i, {1}active j, {2}active height, {3}fuel from start point, {4}prev i, {5}prev j, {6}prev height }
-        int[] startPoint = { 0, 0, map[0, 0], 0, 0, 0, map[0, 0] };
-        int[] goalPoint = { map.GetUpperBound(0), map.GetUpperBound(1), map[map.GetUpperBound(0), map.GetUpperBound(1)], Int16.MaxValue, map.GetUpperBound(0), map.GetUpperBound(1) };
-        int[] currentPoint = goalPoint;
-        openList.Add(startPoint);
+        Point startPoint = new Point()
+        {
+            CoordPoint = new int[] { 0, 0 },
+            Height = map[0, 0],
+            FuelFromStart = 0,
+            PrevPoint = null
+        };
 
-        
+        Point goalPoint = new Point()
+        {
+            CoordPoint = new int[] { map.GetUpperBound(0), map.GetUpperBound(1) },
+            Height = map[map.GetUpperBound(0), map.GetUpperBound(1)],
+            FuelFromStart = Int32.MaxValue,
+            PrevPoint = null
+        };
+
+        Point currentPoint = startPoint;
+
+        neighborList.Add(startPoint);
+
+        while (true)
+        {
+            currentPoint = TakeActivePoint(currentPoint, neighborList);
+            
+            if (CalcHeuristic(currentPoint, goalPoint) == 1)
+            {
+                //goalPoint[4] = currentPoint[0];
+                //goalPoint[5] = currentPoint[1];
+                //goalPoint[6] = currentPoint[2];
+                //goalPoint[3] = currentPoint[3] + Math.Abs(goalPoint[2] - goalPoint[6]) + 1;
+                //output in .txt
+                break;
+            }
+
+            closedList.Add(currentPoint);
+
+            //AddingNeighborPoints(currentPoint, map, openList, neighborList);
+
+            foreach (var challengerPoint in neighborList)
+            {
+                foreach (var openListPoint in openList)
+                {
+                    if (challengerPoint.CoordPoint[0] == openListPoint.CoordPoint[0] && challengerPoint.CoordPoint[1] == openListPoint.CoordPoint[1])
+                    {
+                        if (challengerPoint.FuelFromStart < openListPoint.FuelFromStart)
+                        {
+
+                        }
+                    }
+                }
+                //openList.Add();
+            }
+        }
     }
-    public static int CalcHeuristic(int[] currentPoint, int[] goalPoint)
+    public static int CalcHeuristic(Point currentPoint, Point goalPoint)
     {
-        int heuristic = Math.Abs(currentPoint[0] - goalPoint[0]) + Math.Abs(currentPoint[1] - goalPoint[1]);
+        int heuristic = Math.Abs(currentPoint.CoordPoint[0] - goalPoint.CoordPoint[0]) + Math.Abs(currentPoint.CoordPoint[1] - goalPoint.CoordPoint[1]);
 
         return heuristic;
     }
 
-    public static int CalcFuelConsumptionFromStart(int[] currentPoint)
+    public static void AddingNeighborPoints(Point currentPoint, int[,] map, Collection<Point> neighborList)
     {
-        int fuelConsamption = currentPoint[3] + Math.Abs(currentPoint[2] - currentPoint[6]) + 1;
-        
-        return fuelConsamption; 
-    }
+        neighborList.Clear();
 
-    public static void AddingNeighborPoints(int[] currentPoint, int[,] map, Collection<int[]> openList)
-    {
-        var tempPoints = new Collection<int[]>();
-
-        int[] upperPoint = { currentPoint[0] - 1, currentPoint[1] };
-        int[] leftPoint = { currentPoint[0], currentPoint[1] - 1 };
-        int[] rightPoint = { currentPoint[0], currentPoint[1] + 1 };
-        int[] lowerPoint = { currentPoint[0] + 1, currentPoint[1] };
-
-        tempPoints.Add(upperPoint);
-        tempPoints.Add(leftPoint);
-        tempPoints.Add(rightPoint);
-        tempPoints.Add(lowerPoint);
-        
-        foreach (var point in tempPoints)
+        if (currentPoint.CoordPoint[0] - 1 >= 0)
         {
-            if (point[0] < 0 || point[1] < 0 || point[0] > map.GetUpperBound(0) || point[1] > map.GetUpperBound(1))
+            Point upperPoint = new Point
             {
-                tempPoints.Remove(point);
-            }
-            else
-                openList.Add(point);
+                CoordPoint = new int[] { currentPoint.CoordPoint[0] - 1, currentPoint.CoordPoint[1] },
+                Height = map[currentPoint.CoordPoint[0] - 1, currentPoint.CoordPoint[1]],
+                FuelFromStart = currentPoint.FuelFromStart + Math.Abs(currentPoint.Height - map[currentPoint.CoordPoint[0] - 1, currentPoint.CoordPoint[1]]) + 1,
+                PrevPoint = currentPoint
+            };
+            neighborList.Add(upperPoint);
+        }
+        if (currentPoint.CoordPoint[1] - 1 >= 0)
+        {
+            Point leftPoint = new Point
+            {
+                CoordPoint = new int[] { currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] - 1 },
+                Height = map[currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] - 1],
+                FuelFromStart = currentPoint.FuelFromStart + Math.Abs(currentPoint.Height - map[currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] - 1]) + 1,
+                PrevPoint = currentPoint
+            };
+            neighborList.Add(leftPoint);
+        }
+        if (currentPoint.CoordPoint[1] + 1 <= map.GetUpperBound(1))
+        {
+            Point rightPoint = new Point
+            {
+                CoordPoint = new int[] { currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] + 1 },
+                Height = map[currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] + 1],
+                FuelFromStart = currentPoint.FuelFromStart + Math.Abs(currentPoint.Height - map[currentPoint.CoordPoint[0], currentPoint.CoordPoint[1] + 1]) + 1,
+                PrevPoint = currentPoint
+            };
+            neighborList.Add(rightPoint);
+        }
+        if (currentPoint.CoordPoint[0] + 1 <= map.GetUpperBound(0))
+        {
+            Point lowerPoint = new Point
+            {
+                CoordPoint = new int[] { currentPoint.CoordPoint[0] + 1, currentPoint.CoordPoint[1] },
+                Height = map[currentPoint.CoordPoint[0] + 1, currentPoint.CoordPoint[1]],
+                FuelFromStart = currentPoint.FuelFromStart + Math.Abs(currentPoint.Height - map[currentPoint.CoordPoint[0] + 1, currentPoint.CoordPoint[1]]) + 1,
+                PrevPoint = currentPoint
+            };
+            neighborList.Add(lowerPoint);
         }
     }
 
-    public static int[] TakeActivePoint(int[] currentPoint, Collection<int[]> openList)
+    public static Point TakeActivePoint(Point currentPoint, Collection<Point> neighborList)
     {
-        foreach (var point in openList)
+        foreach (var point in neighborList)
         {
-            if (CalcHeuristic(point, currentPoint) + CalcFuelConsumptionFromStart(point) < CalcHeuristic(point, currentPoint) + CalcFuelConsumptionFromStart(point))
+            if (CalcHeuristic(point, currentPoint) + point.FuelFromStart < CalcHeuristic(point, currentPoint) + point.FuelFromStart)
             {
+                
                 currentPoint = point;
             }
         }
         return currentPoint;
     }
+}
+
+public class Point
+{
+    public int[] CoordPoint { get; set; }
+    public int Height { get; set; }
+    public int FuelFromStart { get; set; }
+    public Point PrevPoint { get; set; }
 }
