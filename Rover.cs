@@ -12,6 +12,9 @@ public class Rover {
         int[] startPoint = { 0, 0, map[0, 0], 0, 0, 0, map[0, 0] };
         int[] goalPoint = { map.GetUpperBound(0), map.GetUpperBound(1), map[map.GetUpperBound(0), map.GetUpperBound(1)], Int32.MaxValue };
 
+        openList.Add(startPoint);
+
+
     }
     public int CalcHeuristic(int[] currentPoint, int[] goalPoint)
     {
@@ -23,6 +26,32 @@ public class Rover {
     public int CalcFuelConsumptionFromStart(int[] currentPoint)
     {
         int fuelConsamption = currentPoint[3] + Math.Abs(currentPoint[2] - currentPoint[6]) + 1;
+        
         return fuelConsamption; 
+    }
+
+    public void AddingNeighborPoints(int[] currentPoint, int[,] map, Collection<int[]> openList)
+    {
+        var tempPoints = new Collection<int[]>();
+
+        int[] upperPoint = { currentPoint[0] - 1, currentPoint[1] };
+        int[] leftPoint = { currentPoint[0], currentPoint[1] - 1 };
+        int[] rightPoint = { currentPoint[0], currentPoint[1] + 1 };
+        int[] lowerPoint = { currentPoint[0] + 1, currentPoint[1] };
+
+        tempPoints.Add(upperPoint);
+        tempPoints.Add(leftPoint);
+        tempPoints.Add(rightPoint);
+        tempPoints.Add(lowerPoint);
+        
+        foreach (var point in tempPoints)
+        {
+            if (point[0] < 0 || point[1] < 0 || point[0] > map.GetUpperBound(0) || point[1] > map.GetUpperBound(1))
+            {
+                tempPoints.Remove(point);
+            }
+            else
+                openList.Add(point);
+        }
     }
 }
