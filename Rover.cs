@@ -20,9 +20,9 @@ public class Rover {
         return heuristic;
     }
 
-    public int CalcFuelConsumptionFromStart(int[] currentPoint, int[] goalPoint)
+    public int CalcFuelConsumptionFromStart(int[] currentPoint)
     {
-        int fuelConsamption = currentPoint[3] + CalcHeuristic(currentPoint, goalPoint) + Math.Abs(currentPoint[2] - currentPoint[6]) + 1;
+        int fuelConsamption = currentPoint[3] + Math.Abs(currentPoint[2] - currentPoint[6]) + 1;
         return fuelConsamption; 
     }
 }
