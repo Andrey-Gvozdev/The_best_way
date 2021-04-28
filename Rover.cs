@@ -13,5 +13,11 @@ public class Rover {
         int[] goalPoint = { map.GetUpperBound(0), map.GetUpperBound(1), map[map.GetUpperBound(0), map.GetUpperBound(1)] };
 
     }
+    public int CalcHeuristic(int[] currentPoint, int[] goalPoint)
+    {
+        int heuristic = Math.Abs(currentPoint[0] - goalPoint[0]) + Math.Abs(currentPoint[1] - goalPoint[1]);
+
+        return heuristic;
+    }
 
 }
