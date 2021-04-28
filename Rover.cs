@@ -1,5 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 
 public class Rover {
 
@@ -34,15 +36,19 @@ public class Rover {
             
             if (CalcHeuristic(activePoint, goalPoint) == 1)
             {
+                string filePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\path-plan.txt";
                 Point pathPoint = goalPoint;
+
                 pathPoint.PrevPoint = activePoint;
                 pathPoint.FuelFromStart = activePoint.FuelFromStart + Math.Abs(activePoint.Height - map[map.GetUpperBound(0), map.GetUpperBound(1)]) + 1;
+
                 while (pathPoint != null)
                 {
                     pathList.Add(pathPoint);
                     pathPoint = pathPoint.PrevPoint;
                 }
-                //output in .txt
+
+                WritingToTXT(pathList, filePath, map);
 
                 break;
             }
@@ -147,6 +153,25 @@ public class Rover {
         }
 
         return activePoint;
+    }
+
+    public static void WritingToTXT(Collection<Point> pathList, string filePath, int[,] map)
+    {
+        string pathSTR = "";
+
+        foreach (var point in pathList.Reverse())
+        {
+            pathSTR += "[" + Convert.ToString(point.CoordPoint[0]) + "]" + "[" + Convert.ToString(point.CoordPoint[1]) + "]";
+            if (point.CoordPoint[0] == map.GetUpperBound(0) && point.CoordPoint[1] == map.GetUpperBound(1)) { }
+            else
+                pathSTR += "->";
+        }
+        pathSTR += "\nsteps: " + Convert.ToString(pathList.Count - 1) + "\nfuel: " + Convert.ToString(pathList[0].FuelFromStart);
+
+        using (StreamWriter pathPlan = new StreamWriter(filePath, false, System.Text.Encoding.Default))
+        {
+            pathPlan.WriteLine(pathSTR);
+        }
     }
 }
 
