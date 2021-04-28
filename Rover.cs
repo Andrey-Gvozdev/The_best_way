@@ -8,6 +8,7 @@ public class Rover {
         var openList = new Collection<Point>();
         var closedList = new Collection<Point>();
         var neighborList = new Collection<Point>();
+        var pathList = new Collection<Point>();
 
         Point startPoint = new Point()
         {
@@ -33,11 +34,15 @@ public class Rover {
             
             if (CalcHeuristic(activePoint, goalPoint) == 1)
             {
-                //goalPoint[4] = currentPoint[0];
-                //goalPoint[5] = currentPoint[1];
-                //goalPoint[6] = currentPoint[2];
-                //goalPoint[3] = currentPoint[3] + Math.Abs(goalPoint[2] - goalPoint[6]) + 1;
+                Point pathPoint = goalPoint;
+                do
+                {
+                    pathList.Add(pathPoint);
+                    pathPoint = pathPoint.PrevPoint;
+                }
+                while (pathPoint != startPoint);
                 //output in .txt
+
                 break;
             }
 
