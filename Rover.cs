@@ -65,9 +65,7 @@ public class Rover {
                 foreach (var closedListPoint in closedList)
                 {
                     if(challengerPoint.CoordPoint[0] == closedListPoint.CoordPoint[0] && challengerPoint.CoordPoint[1] == closedListPoint.CoordPoint[1])
-                    {
                         closedCounter++;
-                    }
                 }
                 if (closedCounter != 0)
                     continue;
@@ -169,9 +167,7 @@ public class Rover {
         pathSTR += "\nsteps: " + Convert.ToString(pathList.Count - 1) + "\nfuel: " + Convert.ToString(pathList[0].FuelFromStart);
 
         using (StreamWriter pathPlan = new StreamWriter(filePath, false, System.Text.Encoding.Default))
-        {
             pathPlan.WriteLine(pathSTR);
-        }
     }
 }
 
